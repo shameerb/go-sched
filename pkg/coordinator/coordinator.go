@@ -90,6 +90,9 @@ func (s *CoordinatorServer) startGRPCServer() error {
 	pb.RegisterCoordinatorServiceServer(s.grpcServer, s)
 	go func() {
 		if err := s.grpcServer.Serve(s.listener); err != nil {
+			// log.Fatalf is not a good idea here. Ideally it should propogate the error upwards and let the main function deal with the panic/error
+			// this will directly exit the main thread itself with a non zero status code
+			// propogate teh error upwards to parent using error channels where the parent is waiting on a select.
 			log.Fatalf("gRPC server failed: %v", err)
 		}
 	}()
@@ -143,6 +146,7 @@ func (s *CoordinatorServer) scanDatabase() {
 	for {
 		select {
 		case <-ticker.C:
+			// Why is this a go routine. At every interval anyway this will run on the main thread. same as the check for inactive workers
 			go s.executeAllScheduledTasks()
 		case <-s.ctx.Done():
 			log.Println("Shutting down database scanner")

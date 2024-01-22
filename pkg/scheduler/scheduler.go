@@ -51,6 +51,7 @@ func NewServer(port, dbConnectionString string) *SchedulerServer {
 	}
 }
 
+// connect to a database, start an http server, await all close sockets (channels, goroutines, http servers, db connections)
 func (s *SchedulerServer) Start() error {
 	var err error
 	s.dbPool, err = common.ConnectToDatabase(s.ctx, s.dbConnectionString)

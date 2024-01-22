@@ -16,9 +16,8 @@ func main() {
 	flag.Parse()
 	log.Println("schedulerPort", schedulerPort)
 	dbConnectionString := common.GetDBConnectionString()
-	cs := scheduler.NewServer(*schedulerPort, dbConnectionString)
-	if err := cs.Start(); err != nil {
+	sh := scheduler.NewServer(*schedulerPort, dbConnectionString)
+	if err := sh.Start(); err != nil {
 		log.Fatalf("Error while starting server: %+v", err)
 	}
-
 }
