@@ -4,60 +4,50 @@ package grpcapi;
 
 option go_package = "github.com/shameerb/go-sched/pkg/grpcapi";
 
-enum TaskStatus {
-    QUEUED = 0;
-    STARTED = 1;
-    COMPLETE = 2;
-    FAILED = 3;
-}
-
 service WorkerService {
     rpc SubmitTask (TaskRequest) returns (TaskResponse) {}
 }
 
 message TaskRequest {
-    string task_id = 1;
+    string taskId = 1;
     string data = 2;
 }
 
 message TaskResponse {
-    string task_id = 1;
+    string taskId = 1;
     string message = 2;
     bool success = 3;
 }
 
+
 service CoordinatorService {
-    rpc SubmitTask (ClientTaskRequest) returns (ClientTaskResponse) {}
-    rpc SendHeartbeat (HeartbeatRequest) returns (HeartbeatResponse) {}
-
-    rpc UpdateTaskStatus (UpdateTaskStatusRequest) returns (UpdateTaskStatusResponse) {}
+    // rpc SubmitTask ()
+    rpc SendHeartBeat (HeartBeatRequest) returns (HeartBeatResponse);
+    rpc UpdateTaskStatus (UpdateTaskStatusRequest) returns (UpdateTaskStatusResponse);
 }
 
-
-message ClientTaskRequest {
-    string data = 1;
-}
-
-message ClientTaskResponse {
-    string message = 2;
-    string task_id = 3;
-}
-
-message HeartbeatRequest {
+message HeartBeatRequest {
     uint32 workerId = 1;
     string address = 2;
 }
 
-message HeartbeatResponse {
+message HeartBeatResponse {
     bool acknowledged = 1;
 }
 
+enum TaskStatus {
+    QUEUED = 0;
+    STARTED = 1;
+    COMPLETED = 2;
+    FAILED = 3;
+}
+
 message UpdateTaskStatusRequest {
-    string task_id = 1;
+    string taskId = 1;
     TaskStatus status = 2;
-    int64 started_at = 3;
-    int64 completed_at = 4;
-    int64 failed_at = 5;
+    int64 startedAt = 3;
+    int64 completedAt = 4;
+    int64 failedAt = 5;
 }
 
 message UpdateTaskStatusResponse {

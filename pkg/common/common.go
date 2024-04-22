@@ -8,56 +8,57 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
 	DefaultHeartBeat = 5 * time.Second
 )
 
-func GetDBConnectionString() string {
-	var missingEnvVars []string
-	checkEnvVar := func(envVar, envVarName string) {
-		if envVar == "" {
-			missingEnvVars = append(missingEnvVars, envVarName)
+func GetDBConnString() string {
+	var missing []string
+
+	checkEnvVar := func(val, key string) {
+		if val == "" {
+			missing = append(missing, key)
 		}
 	}
-
 	dbUser := os.Getenv("POSTGRES_USER")
 	checkEnvVar(dbUser, "POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	checkEnvVar(dbPassword, "POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
 	checkEnvVar(dbName, "POSTGRES_DB")
-	dbHost := os.Getenv("POSTGRES_HOST")
-	if dbHost == "" {
-		dbHost = "localhost"
-	}
-	if len(missingEnvVars) > 0 {
-		log.Fatalf("The following required environment variables are not set: %s",
-			strings.Join(missingEnvVars, ", "))
-
+	dbHost := os.Getenv(("POSTGRES_HOST"))
+	checkEnvVar(dbHost, "POSTGRES_HOST")
+	if len(missing) > 0 {
+		log.Fatalf("following vars are missing : %s", strings.Join(missing, ", "))
 	}
 	return fmt.Sprintf("postgres://%s:%s@%s:5432/%s", dbUser, dbPassword, dbHost, dbName)
 }
 
-func ConnectToDatabase(ctx context.Context, dbConnectionString string) (*pgxpool.Pool, error) {
-	var dbPool *pgxpool.Pool
+func ConnectToDatabase(ctx context.Context, dbConnString string) (*pgxpool.Pool, error) {
+	config := dbConfig(dbConnString)
+	count := 0
+	var pool *pgxpool.Pool
 	var err error
-	retryCount := 0
-	for retryCount < 5 {
-		dbPool, err = pgxpool.Connect(ctx, dbConnectionString)
+	for count < 5 {
+		pool, err = pgxpool.NewWithConfig(ctx, config)
 		if err == nil {
 			break
 		}
-		log.Printf("Failed to connect to the database. Retrying in 5 seconds ...")
+		log.Printf("retry connecting to database in 5 sec...")
 		time.Sleep(5 * time.Second)
-		retryCount++
+		count++
 	}
+	log.Println("connected to database")
+	return pool, nil
+}
+
+func dbConfig(dbConnString string) *pgxpool.Config {
+	dbConfig, err := pgxpool.ParseConfig(dbConnString)
 	if err != nil {
-		log.Printf("Ran out of retries to connect to database {5}")
-		return nil, err
+		log.Fatalf("failed to create db config: %s", err)
 	}
-	log.Printf("Connected to the database")
-	return dbPool, nil
+	return dbConfig
 }

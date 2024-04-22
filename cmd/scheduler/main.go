@@ -9,15 +9,15 @@ import (
 )
 
 var (
-	schedulerPort = flag.String("scheduler_port", ":8081", "Port on which scheduler serves the request")
+	schedulerPort = flag.String("scheduler_port", ":8081", "Scheduler service http Port")
 )
 
 func main() {
 	flag.Parse()
-	log.Println("schedulerPort", schedulerPort)
-	dbConnectionString := common.GetDBConnectionString()
-	sh := scheduler.NewServer(*schedulerPort, dbConnectionString)
-	if err := sh.Start(); err != nil {
-		log.Fatalf("Error while starting server: %+v", err)
+	log.Println("starting scheduler service...")
+	dbConnString := common.GetDBConnString()
+	s := scheduler.NewScheduler(*schedulerPort, dbConnString)
+	if err := s.Start(); err != nil {
+		log.Fatalf("error while starting the scheduler service: %s", err)
 	}
 }

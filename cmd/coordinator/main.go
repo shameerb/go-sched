@@ -9,16 +9,15 @@ import (
 )
 
 var (
-	coordinatorPort = flag.String("coordinator_port", ":8080", "Port which serves the request")
+	coordinatorPort = flag.String("coordinator_port", ":8080", "grpc server port (tcp)")
 )
 
 func main() {
 	flag.Parse()
-	log.Println("cordinatorPort", coordinatorPort)
-	dbConnectionString := common.GetDBConnectionString()
-	cs := coordinator.NewServer(*coordinatorPort, dbConnectionString)
-	if err := cs.Start(); err != nil {
-		log.Fatalf("Failed to start the coordinator server: %+v", err)
+	log.Println("starting coordinator service...")
+	dbConnString := common.GetDBConnString()
+	s := coordinator.NewCoordinator(*coordinatorPort, dbConnString)
+	if err := s.Start(); err != nil {
+		log.Fatalf("error while starting the coordinator service: %s", err)
 	}
-
 }

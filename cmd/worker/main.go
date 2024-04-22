@@ -8,14 +8,15 @@ import (
 )
 
 var (
-	serverPort      = flag.String("worker_port", "", "Port on which the worker serves the grpc request")
-	coordinatorPort = flag.String("coordinator", ":8080", "Network address of the coordinator")
+	workerPort  = flag.String("worker_port", "", "grpc server port (tcp)")
+	coordinator = flag.String("coordinator", ":8080", "Network address for coordinator")
 )
 
 func main() {
 	flag.Parse()
-	worker := worker.NewServer(*serverPort, *coordinatorPort)
-	if err := worker.Start(); err != nil {
-		log.Fatalf("Failed to start the worker: %+v", err)
+	log.Println("starting worker service...")
+	s := worker.NewWorker(*workerPort, *coordinator)
+	if err := s.Start(); err != nil {
+		log.Fatalf("error while starting the worker service: %s", err)
 	}
 }
