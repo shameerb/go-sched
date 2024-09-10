@@ -1,0 +1,20 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:scheduler": "npm run dev -w scheduler",
+    "dev:viewer": "npm run dev -w viewer",
+    "build:scheduler": "npm run build -w scheduler",
+    "build:viewer": "npm run build -w viewer"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+  }
+}

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package grpcapi;
+
+option go_package = "scheduler/pkg/grpcapi";
+
+service WorkerService {
+    rpc SubmitTask(TaskRequest) returns (TaskResponse);
+}
+
+message TaskRequest {
+    string taskId = 1;
+    string data = 2;
+}
+
+message TaskResponse {
+    string taskId = 1;
+    string message = 2;
+    bool success = 3;
+}
+
+service CoordinatorService {
+    rpc SendHeartBeat(HeartBeatRequest) returns (HeartBeatResponse);
+    rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (UpdateTaskStatusResponse);
+}
+
+message HeartBeatRequest {
+    uint32 workerId = 1;
+    string address = 2;
+}
+
+message HeartBeatResponse {
+    bool acknowledged = 1;
+}
+
+enum TaskStatus {
+    QUEUED = 0;
+    STARTED = 1;
+    COMPLETED = 2;
+    FAILED = 3;
+}
+
+message UpdateTaskStatusRequest {
+    string taskId = 1;
+    TaskStatus status = 2;
+    int64 startedAt = 4;
+    int64 completedAt = 5;
+    int64 failedAt = 6;
+}
+
+message UpdateTaskStatusResponse {
+    bool success = 1;
+}

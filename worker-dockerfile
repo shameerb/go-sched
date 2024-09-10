@@ -1,33 +1,47 @@
-# Use an official Go runtime as a parent image
-FROM golang:1.21
+# Frontend Build stage
+FROM node:18-alpine as build
 
-# Install Protobuf compiler and Go-related packages
+# Set the working directory
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files
+COPY frontend/packages/viewer/package*.json ./
+
+# Install dependencies
+# RUN npm ci
+RUN npm install
+
+# Copy the source code
+COPY frontend/packages/viewer .
+
+# Build the Vue.js app
+RUN npm run build
+
+
+FROM golang:1.21 as runtime
+
 RUN apt-get update && apt-get install -y \
     protobuf-compiler \
     golang-go \
     git
 
-# Install the protoc-gen-go and protoc-gen-go-grpc plugins
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the go.mod and go.sum files first to leverage Docker cache
-COPY go.mod go.sum ./
+# Copy the build frontend assets from build stage
+COPY --from=build /app/dist /app/dist
 
-# Download all dependencies
+COPY backend/go.mod backend/go.sum ./
+
 RUN go mod download
 
-# Copy the local package files to the container's workspace.
-COPY pkg/ ./pkg/
-COPY cmd/worker/main.go .
+COPY backend/pkg/ ./pkg/
+COPY backend/cmd/worker/main.go .
 
 RUN ./pkg/grpcapi/build.sh
 
-# Build the worker application
 RUN go build -o worker main.go
 
-# Run the worker when the container launches
 CMD ["./worker", "--coordinator=coordinator:8080"]

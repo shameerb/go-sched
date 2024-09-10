@@ -27,3 +27,4 @@ env.bash
 
 # docker-compose volume
 data/
+archive/
