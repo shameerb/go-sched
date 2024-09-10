@@ -19,7 +19,7 @@ Takes up tasks to be scheduled at a particular time. Can be scaled up to multipl
 ```bash
 
 set -x POSTGRES_HOST localhost # for fish shell, use export for normal bash
-set -x POSTGRES_DB scheduler
+set -x POSTGRES_DB postgres
 set -x POSTGRES_PASSWORD postgres
 set -x POSTGRES_USER postgres
 ```
@@ -31,7 +31,15 @@ curl -X POST localhost:8081/schedule -d '{"command":"Hi","scheduled_at":"2023-12
 curl localhost:8081/status?task_id=<task-id>
 ```
 
-### Enhancements
+### Endpoints (UI)
+- scheduler
+    - http://localhost:8081
+- worker
+    - http://localhost:8100
+    - http://localhost:8101
+
+
+### Enhancements (todos)
 - scheduler
     - multiple schedulers to manage the load of incoming traffic
 - coordinator
