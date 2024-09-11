@@ -28,3 +28,8 @@ env.bash
 # docker-compose volume
 data/
 archive/
+
+# node_modules
+frontend/node_modules/
+frontend/packages/scheduler/node_modules/
+frontend/packages/viewer/node_modules/

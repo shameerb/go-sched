@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: postgres-dockerfile
     environment:
+      TZ: IST
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -66,5 +67,18 @@ services:
     environment:
       WORKER_ADDRESS: worker-2
       VITE_WEB_API: "localhost:8101/api"
+    depends_on:
+      - coordinator
+
+
+worker-3:
+    build:
+      context: .
+      dockerfile: worker-dockerfile
+    ports:
+      - "8101:8082"
+    environment:
+      WORKER_ADDRESS: worker-3
+      VITE_WEB_API: "localhost:8103/api"
     depends_on:
       - coordinator

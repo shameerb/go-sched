@@ -40,6 +40,12 @@ curl localhost:8081/status?task_id=<task-id>
 
 
 ### Enhancements (todos)
+- fault tolerance
+    - what happens when one service dies. 
+    - commit transaction
+    - leader election ? consensus ? 
+- retry mechanism
+- circuit breakers
 - scheduler
     - multiple schedulers to manage the load of incoming traffic
 - coordinator
