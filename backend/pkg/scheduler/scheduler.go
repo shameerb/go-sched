@@ -83,7 +83,6 @@ func (s *Scheduler) startHttpServer() error {
 
 	// serve static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(distPath))).Methods("GET")
-
 	log.Printf("starting scheduler service: %s\n", s.port)
 	go func() {
 		if err := http.ListenAndServe(s.port, r); err != nil {

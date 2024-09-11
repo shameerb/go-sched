@@ -34,6 +34,8 @@ WORKDIR /app
 
 # Copy the build frontend assets from build stage
 COPY --from=build /app/dist /app/dist
+# If you are using htmx instead of vuejs
+# COPY frontend_htmx/scheduler /app/dist
 
 COPY backend/go.mod backend/go.sum ./
 

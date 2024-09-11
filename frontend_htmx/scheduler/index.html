@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Scheduler</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.6/htmx.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="task-scheduler">
+        <h2 class="title">Schedule a Task</h2>
+        <form hx-post="/api/schedule" hx-target="#status-message" hx-swap="innerHTML" class="form">
+            <div class="form-group">
+                <label for="message" class="label">Task Message</label>
+                <input name="message" id="message" required class="input">
+            </div>
+            <div class="form-group">
+                <label for="scheduled_at" class="label">Scheduled Time</label>
+                <input name="scheduled_at" id="scheduled_at" type="datetime-local" required class="input">
+            </div>
+            <button type="submit" class="button">Schedule Task</button>
+        </form>
+        <p id="status-message" class="status-message"></p>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
